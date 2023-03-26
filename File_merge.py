@@ -8,7 +8,7 @@ for i in range(2):
     f2.readline()
     f3.readline()
 
-f1Str = f3.read().replace(",", ".")
+f1Str = f3.read().replace("	", " ").replace(",", ".")
 
 finalF.writelines(f1)
 finalF.writelines(f2)
