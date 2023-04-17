@@ -1,11 +1,14 @@
 package com.company;
 
 import java.io.IOException;
+import java.util.Calendar;
+import java.util.Date;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-        String Path = "S:\\Work\\Weather_project\\Weather_Java\\aboutPoints.xlsx";
-        SpreadSheet a = new SpreadSheet(Path);
-        System.out.println(a.readCell());
+        SpreadSheet points = new SpreadSheet();
+        points.readBluePoints();
+        points.excelFileWriter();
+
     }
 }
