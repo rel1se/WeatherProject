@@ -9,6 +9,5 @@ public class Main {
         SpreadSheet points = new SpreadSheet();
         points.readBluePoints();
         points.excelFileWriter();
-
     }
 }

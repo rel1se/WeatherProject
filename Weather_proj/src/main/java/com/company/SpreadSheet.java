@@ -52,7 +52,7 @@ public class SpreadSheet {
         int rows = 1;
         int pastDate = 22646;
         double[] pressure = new double[16];
-        PascalCounter pascalCounter = new PascalCounter();
+        NewPascalCounter pascalCounter = new NewPascalCounter();
         row = sheet.createRow(rows);
         while ((line = br.readLine()) != null) {
             inf = line.split(" ");
