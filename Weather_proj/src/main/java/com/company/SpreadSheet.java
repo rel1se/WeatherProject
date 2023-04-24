@@ -7,14 +7,14 @@ import java.io.*;
 import java.util.*;
 
 public class SpreadSheet {
-    double[][] bluePoints = new double[16][2];
+    double[][] bluePoints;
 
-
-    public SpreadSheet() {
-
+    public SpreadSheet(double longitude, double latitude) {
+        FindPoints findPoints = new FindPoints(longitude, latitude);
+        bluePoints = findPoints.calcPoints().clone();
     }
 
-    public void readBluePoints() throws FileNotFoundException {
+    /*public void readBluePoints() throws FileNotFoundException {
         Scanner bluePointsReader = new Scanner (new File("16Points.txt"));
         for(int i = 0; i < 16; ++i)
         {
@@ -26,7 +26,7 @@ public class SpreadSheet {
                 }
             }
         }
-    }
+    }*/
 
     public void excelFileWriter() throws IOException {
         Workbook workbook = new XSSFWorkbook();
