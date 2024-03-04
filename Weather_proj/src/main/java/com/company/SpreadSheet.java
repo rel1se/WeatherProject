@@ -3,6 +3,7 @@ package com.company;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import javax.swing.*;
 import java.io.*;
 import java.util.*;
 
@@ -28,7 +29,8 @@ public class SpreadSheet {
         }
     }*/
 
-    public void excelFileWriter() throws IOException {
+    public void excelFileWriter(JProgressBar progressBar, int totalPoints) throws IOException {
+        int processedPoints = 0;
         Workbook workbook = new XSSFWorkbook();
         Sheet sheet = workbook.createSheet("Sheet1");
         Row row;
@@ -68,7 +70,7 @@ public class SpreadSheet {
 
             for (int i = 0; i < 16; i++) {
                 if (bluePoints[i][0] == Double.parseDouble(inf[0]) &&
-                    bluePoints[i][1] == Double.parseDouble(inf[1])) {
+                        bluePoints[i][1] == Double.parseDouble(inf[1])) {
                     calendar.setTimeInMillis((long) (Double.parseDouble(inf[2]) - 8036) * 24 * 60 * 60 * 1000);
                     date = calendar.get(Calendar.DAY_OF_MONTH) + "." +
                             (calendar.get(Calendar.MONTH) + 1) + "." +
@@ -90,6 +92,9 @@ public class SpreadSheet {
                     break;
                 }
             }
+            processedPoints++;
+            double progress = ((double)processedPoints / (double) totalPoints) * 100; // Рассчитываем текущий прогресс в процентах
+            progressBar.setValue((int) progress); // Устанавливаем значение прогресса в прогресс бар
         }
 
         File f = new File("aboutPoints.xlsx");

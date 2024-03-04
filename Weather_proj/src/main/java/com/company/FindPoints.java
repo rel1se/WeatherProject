@@ -1,8 +1,5 @@
 package com.company;
 
-import java.io.File;
-import java.util.Arrays;
-
 public class FindPoints {
     private final double longitude;
     private final double latitude;
