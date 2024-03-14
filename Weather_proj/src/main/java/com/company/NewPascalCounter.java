@@ -1,5 +1,9 @@
 package com.company;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+
 public class NewPascalCounter {
     private double[] p = {};
     private double F;
@@ -13,7 +17,7 @@ public class NewPascalCounter {
         p = ar.clone();
     }
 
-    public void circulationIndexCounter() {
+    public double[] circulationIndexCounter() {
         double s = 1.86 * (0.25 * (p[4] + 2 * p[8] + p[12]) - 0.25 * (p[3] + 2 * p[7] + p[11]));
         double w = 0.5 * (p[11] + p[12]) - 0.5 * (p[3] + p[4]);
         F = Math.pow(Math.pow(s, 2) + Math.pow(w, 2), 0.5);
@@ -36,6 +40,13 @@ public class NewPascalCounter {
         double ZS = 1.73 * (0.25 * (p[5] + 2 * p[9] + p[13]) - 0.25 * (p[4] + 2 * p[8] + p[12]) - 0.25 * (p[3] + 2 * p[7] + p[11]) + 0.25 * (p[2] + 2 * p[6] + p[10]));
         double ZW = 1.06 * (0.5 * (p[14] + p[15]) - 0.5 * (p[7] + p[8])) - 0.95 * (0.5 * (p[7] + p[8]) - 0.5 * (p[0] + p[1]));
         Z = ZW + ZS;
+
+        List<Double> resultList = new ArrayList<>();
+        resultList.add(w);
+        resultList.add(s);
+        resultList.add(F);
+        resultList.add(Z);
+        return resultList.stream().mapToDouble(Double::doubleValue).toArray();
     }
 
     public String classificationOfDays() {
