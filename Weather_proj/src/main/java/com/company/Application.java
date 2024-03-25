@@ -4,14 +4,18 @@ import javax.swing.*;
 import javax.swing.border.LineBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 //117.5 57.5
 public class Application {
+
+    private File selectedFolder;
     public void GUIExec() {
         JFrame frame = new JFrame();
         frame.getContentPane().setBackground(new Color(255, 250, 250));
@@ -38,7 +42,6 @@ public class Application {
         title.setPreferredSize(new Dimension(400, 100));
         frame.add(title);
 
-        // Добавляем подписи к полям ввода текста
         JLabel longitudeLabel = new JLabel("Долгота:");
         longitudeLabel.setBounds(50, 100, 100, 30);
         frame.add(longitudeLabel);
@@ -52,24 +55,16 @@ public class Application {
         for (double lon = 85.0; lon <= 125.0; lon += 2.50) {
             longitudeValues.add(lon);
         }
-        // Создаем JComboBox для выбора долготы
-//        JComboBox<Double> longitudeComboBox = new JComboBox<>(longitudeValues.toArray(new Double[0]));
-//        longitudeComboBox.setBounds(150, 100, 220, 30);
-//        longitudeComboBox.setSelectedItem(117.5);
-//        longitudeComboBox.setBackground(new Color(255,255,255));
-//        frame.add(longitudeComboBox);
         JTextField longitudeTextField = new JTextField();
         longitudeTextField.setBounds(150, 100, 220, 30);
         longitudeTextField.setText("117.5"); // Устанавливаем начальное значение
         longitudeTextField.setBackground(new Color(255, 255, 255));
         frame.add(longitudeTextField);
 
-        // Создаем список значений для выбора широты
         List<Double> latitudeValues = new ArrayList<>();
         for (double lat = 45.0; lat <= 70.0; lat += 2.50) {
             latitudeValues.add(lat);
         }
-        // Создаем JComboBox для выбора широты
         JTextField latitudeTextField = new JTextField();
         latitudeTextField.setBounds(150, 150, 220, 30);
         latitudeTextField.setText("57.5");
@@ -94,11 +89,29 @@ public class Application {
         progressBar.setVisible(false);
         frame.add(progressBar);
 
+        JButton chooseFolderButton = new JButton("Выбрать папку");
+        chooseFolderButton.setBounds(150, 250, 220, 50);
+        frame.add(chooseFolderButton);
+
         frame.setSize(500, 400);
         frame.setResizable(false);
         frame.setTitle("Weather project v1.0");
         frame.setLayout(null);
         frame.setVisible(true);
+
+        chooseFolderButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JFileChooser fileChooser = new JFileChooser();
+                fileChooser.setCurrentDirectory(new File("./coordsData"));
+                fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+                int returnValue = fileChooser.showOpenDialog(frame);
+                if (returnValue == JFileChooser.APPROVE_OPTION) {
+                    selectedFolder = fileChooser.getSelectedFile();
+                    JOptionPane.showMessageDialog(frame, "Выбрана папка: " + selectedFolder.getAbsolutePath());
+                }
+            }
+        });
 
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -110,7 +123,7 @@ public class Application {
                         progressBar.setVisible(true);
                         double longitude = Double.parseDouble(longitudeTextField.getText());
                         double latitude = Double.parseDouble(latitudeTextField.getText());
-                        SpreadSheet points = new SpreadSheet(longitude, latitude);
+                        SpreadSheet points = new SpreadSheet(longitude, latitude, selectedFolder);
                         try {
                             points.excelFileWriter(progressBar, totalPoints);
                             JOptionPane.showMessageDialog(frame, "Файл создан", "Success", JOptionPane.INFORMATION_MESSAGE);
