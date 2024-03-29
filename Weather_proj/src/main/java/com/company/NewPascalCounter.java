@@ -54,7 +54,7 @@ public class NewPascalCounter {
         return resultList.stream().mapToDouble(Double::doubleValue).toArray();
     }
 
-    public String classificationOfDays() {
+    public String classificationOfDays(double k1, double k2) {
         double absZ = Math.abs(Z);
         String AT;
         if (absZ > (2 * F) && Z > 0) AT = "C";

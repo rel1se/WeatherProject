@@ -12,14 +12,17 @@ import java.util.*;
 
 public class SpreadSheet {
     double longitude, latitude;
+    double k1, k2;
     File coordsFolder;
     double[][] bluePoints;
 
-    public SpreadSheet(double longitude, double latitude, File coordsFolder) {
+    public SpreadSheet(double longitude, double latitude, double k1, double k2, File coordsFolder) {
         FindPoints findPoints = new FindPoints(longitude, latitude);
         bluePoints = findPoints.calcPoints().clone();
         this.longitude = longitude;
         this.latitude = latitude;
+        this.k1 = k1;
+        this.k2 = k2;
         this.coordsFolder = coordsFolder;
     }
 
@@ -37,8 +40,7 @@ public class SpreadSheet {
 
     public File[] getFiles(File directory) {
         if (directory.exists()) {
-            File[] files = directory.listFiles();
-            return files;
+            return directory.listFiles();
         } else {
             System.out.println("Указанная директория не существует или не является директорией.");
             return null;
@@ -113,7 +115,7 @@ public class SpreadSheet {
                         if (all16 == 16) {
                             pascalCounter.pressureFiller(pressure);
                             double[] variables = pascalCounter.circulationIndexCounter();
-                            cellStringValue(3, pascalCounter.classificationOfDays(), row, cellBorder);
+                            cellStringValue(3, pascalCounter.classificationOfDays(k1, k2), row, cellBorder);
                             cellNumericValue(4, variables[0], row, numericStyle);
                             cellNumericValue(5, variables[1], row, numericStyle);
                             cellNumericValue(6, variables[2], row, numericStyle);

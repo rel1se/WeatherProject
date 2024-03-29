@@ -1,7 +1,5 @@
 package com.company;
 
-import java.util.Locale;
-
 public class FindPoints {
     private final double longitude;
     private final double latitude;
