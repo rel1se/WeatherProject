@@ -7,7 +7,7 @@ public class NewPascalCounter {
     private double[] p = {};
     private double F;
     private String Rumb;
-    private double Z;
+    private double Z, s, w;
     private final double latitude;
 
     NewPascalCounter(double latitude) {
@@ -23,8 +23,8 @@ public class NewPascalCounter {
         double koefZW2 = Math.round(Math.sin(latitude) / Math.sin(latitude + Math.toRadians(5)) * 100) / 100.0;
         double koefZS = Math.round(1 / (2 * Math.pow(Math.cos(latitude), 2)) * 100) / 100.0;
         double koefS = Math.round(1 / Math.cos(latitude) * 100) / 100.0;
-        double s = koefS * (0.25 * (p[4] + 2 * p[8] + p[12]) - 0.25 * (p[3] + 2 * p[7] + p[11]));
-        double w = 0.5 * (p[11] + p[12]) - 0.5 * (p[3] + p[4]);
+        s = koefS * (0.25 * (p[4] + 2 * p[8] + p[12]) - 0.25 * (p[3] + 2 * p[7] + p[11]));
+        w = 0.5 * (p[11] + p[12]) - 0.5 * (p[3] + p[4]);
         F = Math.pow(Math.pow(s, 2) + Math.pow(w, 2), 0.5);
         double d = Math.toDegrees(Math.atan(w / s));
         if ((s > 0 && w > 0) || (s > 0 && w < 0)) {
@@ -57,15 +57,15 @@ public class NewPascalCounter {
     public String classificationOfDays(double k1, double k2) {
         double absZ = Math.abs(Z);
         String AT;
-        if (absZ > (2 * F) && Z > 0) AT = "C";
-        else if (absZ > (2 * F) && Z < 0) AT = "A";
-        else if (absZ < F) AT = Rumb;
-        else if (absZ > F && Z > 0) AT = "C" + Rumb;
-        else if (absZ > F && Z < 0) AT = "A" + Rumb;
+        if (absZ > (k1 * F) && Z > 0) AT = "C";
+        else if (absZ > (k1 * F) && Z < 0) AT = "A";
+        else if (absZ < F) AT = Rumb; // PUR-DIR
+        else if (absZ > F && Z > 0) AT = "C" + Rumb; // ZN
+        else if (absZ > F && Z < 0) AT = "A" + Rumb; // AZ
         else AT = "1";
 
         String AU;
-        if (F < 6 && absZ < 6) {
+        if (F < k2 && absZ < k2) {
             AU = "U";
         } else {
             AU = AT;
@@ -73,3 +73,29 @@ public class NewPascalCounter {
         return AU;
     }
 }
+
+/*
+else if (absZ < F) {
+        if (s == 0) {
+AT = w < 0 ? "E":"W";
+        }
+        else {
+AT = Rumb; // PUR-DIR
+            }
+                    }
+                    else if (absZ > F && Z > 0) {
+        if (s == 0) {
+AT = w < 0 ? "CE":"CW";
+        }
+        else {
+AT = "C" + Rumb; // ZN
+            }
+                    }
+                    else if (absZ > F && Z < 0) {
+        if (s == 0) {
+AT = w < 0 ? "AE":"AW";
+        }
+        else {
+AT = "A" + Rumb; // AZ
+            }
+                    }*/
