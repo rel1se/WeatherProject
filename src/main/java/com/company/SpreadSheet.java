@@ -1,6 +1,7 @@
 package com.company;
 
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import javax.swing.*;
@@ -54,7 +55,7 @@ public class SpreadSheet {
         LocalDate currentDate = LocalDate.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
         String formattedDate = currentDate.format(formatter) + ".xlsx";
-        Workbook workbook = new XSSFWorkbook();
+        Workbook workbook = new SXSSFWorkbook();
         Sheet sheet = workbook.createSheet("Sheet1");
         for (int i = 0; i <= 7; i++) {
             sheet.setColumnWidth(i, 3000);
@@ -88,10 +89,12 @@ public class SpreadSheet {
         double[] pressure = new double[16];
         NewPascalCounter pascalCounter = new NewPascalCounter(latitude);
         row = sheet.createRow(rows);
+
+        System.out.println("Начало обработки файлов в папке...");
         for (File file : getFiles(coordsFolder)) {
             try (BufferedReader br = new BufferedReader(new FileReader(file))) {
                 while ((line = br.readLine()) != null) {
-                    inf = line.split(" ");
+                    inf = line.split("[ 	]+");
                     if (all16 == 16 && pastDate == ((int) Double.parseDouble(inf[2]))) {
                         continue;
                     } else if (pastDate != ((int) Double.parseDouble(inf[2]))) {
@@ -128,14 +131,22 @@ public class SpreadSheet {
                         }
                     }
                     processedPoints++;
-                    double progress = ((double) processedPoints / (double) totalPoints) * 100;
-                    progressBar.setValue((int) progress);
+                    if (processedPoints % 1000 == 0) {
+                        double progress = ((double) processedPoints / (double) totalPoints) * 100;
+                        progressBar.setValue((int) progress);
+                    }
                 }
             }
         }
+        System.out.println("Все файлы обработаны. Начало записи в Excel.");
 
         try (FileOutputStream fos = new FileOutputStream(new File(formattedDate))) {
+            System.out.println("Начало записи в файл...");
             workbook.write(fos);
+            System.out.println("Файл записан успешно.");
+        }
+        finally {
+            ((SXSSFWorkbook) workbook).dispose();
         }
     }
 }

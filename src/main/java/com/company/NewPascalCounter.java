@@ -57,20 +57,54 @@ public class NewPascalCounter {
     public String classificationOfDays(double k1, double k2) {
         double absZ = Math.abs(Z);
         String AT;
-        if (absZ > (k1 * F) && Z > 0) AT = "C";
-        else if (absZ > (k1 * F) && Z < 0) AT = "A";
-        else if (absZ < F) AT = Rumb; // PUR-DIR
-        else if (absZ > F && Z > 0) AT = "C" + Rumb; // ZN
-        else if (absZ > F && Z < 0) AT = "A" + Rumb; // AZ
-        else AT = "1";
-
         String AU;
-        if (F < k2 && absZ < k2) {
-            AU = "U";
-        } else {
-            AU = AT;
+        if (s != 0) {
+            if (absZ > (k1 * F) && Z > 0) AT = "C";
+            else if (absZ > (k1 * F) && Z < 0) AT = "A";
+            else if (absZ < F) AT = Rumb; // PUR-DIR
+            else if (absZ > F && Z > 0) AT = "C" + Rumb; // ZN
+            else if (absZ > F && Z < 0) AT = "A" + Rumb; // AZ
+            else AT = "1";
+
+            if (F < k2 && absZ < k2) {
+                AU = "U";
+            } else {
+                AU = AT;
+            }
+            return AU;
         }
-        return AU;
+        else {
+            if (F < k2 && absZ < k2) {
+                return "U";
+            }
+            else if (absZ < F && w > 0) {
+                return "W";
+            }
+            else if (absZ < F && w < 0) {
+                return "E";
+            }
+            else if (absZ > k1 * F && Z > 0) {
+                return "C";
+            }
+            else if (absZ > k1 * F && Z < 0) {
+                return "A";
+            }
+            else if (F < absZ && absZ < k1 * F && Z > 0 && w > 0) {
+                return "CW";
+            }
+            else if (F < absZ && absZ < k1 * F && Z > 0 && w < 0) {
+                return "CE";
+            }
+            else if (F < absZ && absZ < k1 * F && Z < 0 && w > 0) {
+                return "AW";
+            }
+            else if (F < absZ && absZ < k1 * F && Z < 0 && w < 0) {
+                return "AE";
+            }
+            else {
+                return "U";
+            }
+        }
     }
 }
 
