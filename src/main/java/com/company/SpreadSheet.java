@@ -15,8 +15,9 @@ public class SpreadSheet {
     double k1, k2;
     File coordsFolder;
     double[][] bluePoints;
+    private final Application app;
 
-    public SpreadSheet(double longitude, double latitude, double k1, double k2, File coordsFolder) {
+    public SpreadSheet(double longitude, double latitude, double k1, double k2, File coordsFolder, Application app) {
         FindPoints findPoints = new FindPoints(longitude, latitude);
         bluePoints = findPoints.calcPoints().clone();
         this.longitude = longitude;
@@ -24,6 +25,7 @@ public class SpreadSheet {
         this.k1 = k1;
         this.k2 = k2;
         this.coordsFolder = coordsFolder;
+        this.app = app;
     }
 
     private void cellNumericValue(int number, double value, Row row, CellStyle cellStyle) {
@@ -87,55 +89,53 @@ public class SpreadSheet {
         NewPascalCounter pascalCounter = new NewPascalCounter(latitude);
         row = sheet.createRow(rows);
         for (File file : getFiles(coordsFolder)) {
-            BufferedReader br = new BufferedReader(new FileReader(file));
-            while ((line = br.readLine()) != null) {
-                inf = line.split(" ");
-                if (all16 == 16 && pastDate == ((int) Double.parseDouble(inf[2]))) {
-                    continue;
-                } else if (pastDate != ((int) Double.parseDouble(inf[2]))) {
-                    rows++;
-                    row = sheet.createRow(rows);
-                    all16 = 0;
-                    pastDate = (int) Double.parseDouble(inf[2]);
-                }
-
-                for (int i = 0; i < 16; i++) {
-                    if (bluePoints[i][0] == Double.parseDouble(inf[0]) &&
-                            bluePoints[i][1] == Double.parseDouble(inf[1])) {
-                        calendar.setTimeInMillis((long) (Double.parseDouble(inf[2]) - 8036) * 24 * 60 * 60 * 1000);
-                        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy");
-                        date = simpleDateFormat.format(calendar.getTime());
-                        if (all16 == 0) {
-                            cellStringValue(0, date, row, cellBorder);
-                        }
-                        cellNumericValue(1, longitude, row, cellBorder);
-                        cellNumericValue(2, latitude, row, cellBorder);
-                        pressure[i] = Double.parseDouble(inf[3]) / 100;
-                        all16++;
-                        if (all16 == 16) {
-                            pascalCounter.pressureFiller(pressure);
-                            double[] variables = pascalCounter.circulationIndexCounter();
-                            cellStringValue(3, pascalCounter.classificationOfDays(k1, k2), row, cellBorder);
-                            cellNumericValue(4, variables[0], row, numericStyle);
-                            cellNumericValue(5, variables[1], row, numericStyle);
-                            cellNumericValue(6, variables[2], row, numericStyle);
-                            cellNumericValue(7, variables[3], row, numericStyle);
-                        }
-                        break;
+            try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+                while ((line = br.readLine()) != null) {
+                    inf = line.split(" ");
+                    if (all16 == 16 && pastDate == ((int) Double.parseDouble(inf[2]))) {
+                        continue;
+                    } else if (pastDate != ((int) Double.parseDouble(inf[2]))) {
+                        rows++;
+                        row = sheet.createRow(rows);
+                        all16 = 0;
+                        pastDate = (int) Double.parseDouble(inf[2]);
                     }
+
+                    for (int i = 0; i < 16; i++) {
+                        if (bluePoints[i][0] == Double.parseDouble(inf[0]) &&
+                                bluePoints[i][1] == Double.parseDouble(inf[1])) {
+                            calendar.setTimeInMillis((long) (Double.parseDouble(inf[2]) - 8036) * 24 * 60 * 60 * 1000);
+                            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy");
+                            date = simpleDateFormat.format(calendar.getTime());
+                            if (all16 == 0) {
+                                cellStringValue(0, date, row, cellBorder);
+                            }
+                            cellNumericValue(1, longitude, row, cellBorder);
+                            cellNumericValue(2, latitude, row, cellBorder);
+                            // Деление паскалей, в зависимости от положения рычажка
+                            pressure[i] = app.isDivideByHundred() ? Double.parseDouble(inf[3]) / 100 : Double.parseDouble(inf[3]);
+                            all16++;
+                            if (all16 == 16) {
+                                pascalCounter.pressureFiller(pressure);
+                                double[] variables = pascalCounter.circulationIndexCounter();
+                                cellStringValue(3, pascalCounter.classificationOfDays(k1, k2), row, cellBorder);
+                                cellNumericValue(4, variables[0], row, numericStyle);
+                                cellNumericValue(5, variables[1], row, numericStyle);
+                                cellNumericValue(6, variables[2], row, numericStyle);
+                                cellNumericValue(7, variables[3], row, numericStyle);
+                            }
+                            break;
+                        }
+                    }
+                    processedPoints++;
+                    double progress = ((double) processedPoints / (double) totalPoints) * 100;
+                    progressBar.setValue((int) progress);
                 }
-                processedPoints++;
-                double progress = ((double) processedPoints / (double) totalPoints) * 100;
-                progressBar.setValue((int) progress);
             }
         }
 
-        File result = new File(formattedDate);
-        String path = result.getAbsolutePath();
-
-
-        FileOutputStream fos = new FileOutputStream(path);
-        workbook.write(fos);
-        fos.close();
+        try (FileOutputStream fos = new FileOutputStream(new File(formattedDate))) {
+            workbook.write(fos);
+        }
     }
 }

@@ -11,6 +11,7 @@ public class Application {
 
     private final HelpfulMethods helpfulMethods = new HelpfulMethods(this);
     private File selectedFolder;
+    private boolean divideByHundred = true; // Флаг для деления на 100
 
     public File getSelectedFolder() {
         return selectedFolder;
@@ -23,10 +24,24 @@ public class Application {
 
         // Подпись сверху
         JLabel title = new JLabel("Введите данные для расчетов");
-        title.setBounds(150, 0, 500, 100);
+        title.setBounds(150, -10, 500, 100);
         title.setFont(new Font("Arial", Font.BOLD, 14));
         title.setPreferredSize(new Dimension(400, 100));
         frame.add(title);
+
+        // Создание рычажка (Toggle Button) для переключения деления на 100
+        JToggleButton divideToggle = new JToggleButton("Делить на 100", true);
+        divideToggle.setBounds(150, 60, 220, 30);
+        divideToggle.addItemListener(e -> {
+            if (e.getStateChange() == ItemEvent.SELECTED) {
+                divideByHundred = true;
+                divideToggle.setText("Делить на 100");
+            } else {
+                divideByHundred = false;
+                divideToggle.setText("Без деления");
+            }
+        });
+        frame.add(divideToggle);
 
         // Подпись долготы
         JLabel longitudeLabel = new JLabel("Долгота:");
@@ -163,7 +178,7 @@ public class Application {
                     double latitude = Double.parseDouble(latitudeTextField.getText());
                     double k1Double = Double.parseDouble(k1.getText());
                     double k2Double = Double.parseDouble(k2.getText());
-                    SpreadSheet points = new SpreadSheet(longitude, latitude, k1Double, k2Double, selectedFolder);
+                    SpreadSheet points = new SpreadSheet(longitude, latitude, k1Double, k2Double, selectedFolder, Application.this);
                     try {
                         points.excelFileWriter(progressBar, totalPoints);
                         JOptionPane.showMessageDialog(frame, "Файл создан", "Success", JOptionPane.INFORMATION_MESSAGE);
@@ -231,8 +246,12 @@ public class Application {
         // Настройки окна
         frame.setSize(500, 450);
         frame.setResizable(false);
-        frame.setTitle("Weather project v1.0");
+        frame.setTitle("Weather project v1.1");
         frame.setLayout(null);
         frame.setVisible(true);
+    }
+
+    public boolean isDivideByHundred() {
+        return divideByHundred;
     }
 }
